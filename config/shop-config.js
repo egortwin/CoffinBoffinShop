@@ -4,12 +4,12 @@
 
 const SHOP_CONFIG = {
     // === ОСНОВНАЯ ИНФОРМАЦИЯ ===
-    shopTitle: "СтройМаркет Pro",
-    shopDescription: "Качественные строительные материалы",
+    shopTitle: "COFFIN BOFFIN",
+    shopDescription: "Брелоки, футляры, шкатулки и все в виде гробов",
     
     // === ЛОГОТИП ===
     // Укажите путь к вашему логотипу или URL изображения
-    logoPath: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=100&h=100&fit=crop&crop=center",
+    logoPath: "https://i.postimg.cc/vTSbgMvw/Bez-imeni-1.png",
     
     // === ЦВЕТА МАГАЗИНА ===
     colors: {
