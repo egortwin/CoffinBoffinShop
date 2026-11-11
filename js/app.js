@@ -101,8 +101,8 @@ class ShopApp {
     async loadProducts() {
         try {
             this.showLoader();
-            
-            // Используем только встроенный каталог. Не подменяем его старыми тестовыми товарами.
+
+            // Используем только встроенный каталог — старые тестовые данные не подставляем.
             if (!Array.isArray(window.EMBEDDED_CATALOG)) {
                 throw new Error('Встроенный каталог не загружен или содержит синтаксическую ошибку');
             }
@@ -110,29 +110,9 @@ class ShopApp {
             console.log('Используем встроенный каталог');
             this.allProducts = window.EMBEDDED_CATALOG;
             this.renderProducts(this.allProducts);
-                return;
-            }
-            
-            // Попытка загрузить из JSON файла
-            try {
-                const response = await fetch('data/catalog.json');
-                if (response.ok) {
-                    const data = await response.json();
-                    this.allProducts = data;
-                    console.log('Каталог загружен из JSON');
-                } else {
-                    throw new Error('Файл не найден');
-                }
-            } catch (error) {
-                console.log('Не удалось загрузить catalog.json, используем тестовые данные');
-                // Fallback к тестовым данным
-                this.allProducts = this.getTestProducts();
-            }
-            
-            this.renderProducts(this.allProducts);
         } catch (error) {
             console.error('Ошибка загрузки товаров:', error);
-            this.showError('Не удалось загрузить товары');
+            this.showError('Не удалось загрузить каталог. Проверьте embedded-catalog.js');
         } finally {
             this.hideLoader();
         }
