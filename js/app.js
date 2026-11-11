@@ -62,10 +62,14 @@ class ShopApp {
 
         // Клавиатура
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.elements.cartModal.style.display === 'flex') {
-                this.closeCart();
+            if (e.key === 'Escape') {
+                this.closeImageViewer();
+                if (this.elements.cartModal.style.display === 'flex') this.closeCart();
             }
         });
+
+        // Полноэкранный просмотр фотографий
+        this.createImageViewer();
     }
 
     // Основная инициализация
@@ -174,6 +178,36 @@ class ShopApp {
     }
 
 
+    // Создание полноэкранного просмотрщика изображений
+    createImageViewer() {
+        const viewer = document.createElement('div');
+        viewer.className = 'image-viewer';
+        viewer.setAttribute('aria-hidden', 'true');
+        viewer.innerHTML = '<button type="button" class="image-viewer-close" aria-label="Закрыть">×</button><img class="image-viewer-img" alt="">';
+        document.body.appendChild(viewer);
+        viewer.addEventListener('click', () => this.closeImageViewer());
+        viewer.querySelector('.image-viewer-img').addEventListener('click', () => this.closeImageViewer());
+        viewer.querySelector('.image-viewer-close').addEventListener('click', () => this.closeImageViewer());
+        this.elements.imageViewer = viewer;
+        this.elements.imageViewerImg = viewer.querySelector('.image-viewer-img');
+    }
+
+    openImageViewer(src, alt) {
+        if (!this.elements.imageViewer || !src) return;
+        this.elements.imageViewerImg.src = src;
+        this.elements.imageViewerImg.alt = alt || '';
+        this.elements.imageViewer.classList.add('active');
+        this.elements.imageViewer.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('image-viewer-open');
+    }
+
+    closeImageViewer() {
+        if (!this.elements?.imageViewer) return;
+        this.elements.imageViewer.classList.remove('active');
+        this.elements.imageViewer.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('image-viewer-open');
+    }
+
     // Карточка товара с каруселью изображений
     createProductCard(product) {
         const card = document.createElement('div');
@@ -244,6 +278,19 @@ class ShopApp {
         }, { passive: true });
 
         mainImg.addEventListener('error', () => { mainImg.src = fallbackPhoto; }, { once: true });
+        mainImg.addEventListener('click', (event) => {
+            event.stopPropagation();
+            this.openImageViewer(mainImg.src, mainImg.alt);
+        });
+        mainImg.setAttribute('role', 'button');
+        mainImg.setAttribute('tabindex', '0');
+        mainImg.setAttribute('aria-label', 'Увеличить изображение');
+        mainImg.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                this.openImageViewer(mainImg.src, mainImg.alt);
+            }
+        });
 
         const addToCartButton = card.querySelector('.add-to-cart-button');
         if (product.price != null) {
