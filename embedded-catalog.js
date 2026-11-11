@@ -77,8 +77,8 @@ window.EMBEDDED_CATALOG = [
     "category": "Брелоки",
     "inStock": true,
     "popular": false
-  }
-   {
+  },
+  {
     "id": 8,
     "sku": "CB-008",
     "name": "Футляр EMBER II",
