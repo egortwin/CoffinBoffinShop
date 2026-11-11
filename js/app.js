@@ -191,32 +191,35 @@ class ShopApp {
     }
 
 
-    // Создание карточки товара (с поддержкой нескольких фото)
+    // Карточка товара с каруселью изображений
     createProductCard(product) {
         const card = document.createElement('div');
         card.className = 'product-card';
-        
         const formattedPrice = this.formatPrice(product.price);
-        
-        // Нормализуем фото в массив
-        const photos = Array.isArray(product.photo) ? product.photo : [product.photo];
-        const mainPhoto = photos[0] || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&h=300&fit=crop';
-        
-        // Генерируем миниатюры, если фото больше одного
-        let thumbnailsHtml = '';
-        if (photos.length > 1) {
-            thumbnailsHtml = `<div class="product-thumbnails">` +
-                photos.map((p, i) => 
-                    `<img src="${p}" class="product-thumb ${i === 0 ? 'active' : ''}" 
-                          data-src="${p}" alt="Фото ${i + 1}">`
-                ).join('') +
-                `</div>`;
-        }
-        
+        const fallbackPhoto = 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=600&fit=crop';
+        const sourcePhotos = product.photos || product.gallery || product.photo || [];
+        const photos = (Array.isArray(sourcePhotos) ? sourcePhotos : [sourcePhotos])
+            .filter(photo => typeof photo === 'string' && photo.trim())
+            .map(photo => photo.trim());
+        if (!photos.length) photos.push(fallbackPhoto);
+
+        const thumbnailsHtml = photos.length > 1
+            ? `<div class="product-thumbnails" aria-label="Выбрать фото">${photos.map((photo, index) =>
+                `<button type="button" class="product-thumb-button ${index === 0 ? 'active' : ''}" data-index="${index}" aria-label="Фото ${index + 1}">
+                    <img src="${photo}" alt="" loading="lazy">
+                </button>`).join('')}</div>`
+            : '';
+
         card.innerHTML = `
             <div class="product-photo">
-                <img class="product-main-img" src="${mainPhoto}" alt="${product.name}" 
-                     onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&h=300&fit=crop';">
+                <div class="product-carousel">
+                    <img class="product-main-img" src="${photos[0]}" alt="${product.name}" loading="lazy">
+                    ${photos.length > 1 ? `
+                        <button type="button" class="product-carousel-arrow prev" aria-label="Предыдущее фото">‹</button>
+                        <button type="button" class="product-carousel-arrow next" aria-label="Следующее фото">›</button>
+                        <span class="product-carousel-count">1 / ${photos.length}</span>
+                    ` : ''}
+                </div>
                 ${thumbnailsHtml}
             </div>
             <div class="product-details">
@@ -228,25 +231,42 @@ class ShopApp {
                 </div>
             </div>
         `;
-        
-        // Логика переключения изображений по миниатюрам
+
         const mainImg = card.querySelector('.product-main-img');
-        const thumbnails = card.querySelectorAll('.product-thumb');
-        
-        thumbnails.forEach(thumb => {
-            thumb.addEventListener('click', () => {
-                mainImg.src = thumb.dataset.src;
-                thumbnails.forEach(t => t.classList.remove('active'));
-                thumb.classList.add('active');
+        const thumbnails = [...card.querySelectorAll('.product-thumb-button')];
+        const counter = card.querySelector('.product-carousel-count');
+        let currentIndex = 0;
+        const showPhoto = (index) => {
+            currentIndex = (index + photos.length) % photos.length;
+            mainImg.src = photos[currentIndex];
+            if (counter) counter.textContent = `${currentIndex + 1} / ${photos.length}`;
+            thumbnails.forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === currentIndex);
+                thumb.setAttribute('aria-current', i === currentIndex ? 'true' : 'false');
             });
-        });
-        
+        };
+
+        card.querySelector('.product-carousel-arrow.prev')?.addEventListener('click', () => showPhoto(currentIndex - 1));
+        card.querySelector('.product-carousel-arrow.next')?.addEventListener('click', () => showPhoto(currentIndex + 1));
+        thumbnails.forEach((thumb, index) => thumb.addEventListener('click', () => showPhoto(index)));
+
+        const carousel = card.querySelector('.product-carousel');
+        let touchStartX = 0;
+        carousel.addEventListener('touchstart', event => {
+            touchStartX = event.changedTouches[0].clientX;
+        }, { passive: true });
+        carousel.addEventListener('touchend', event => {
+            const deltaX = event.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(deltaX) > 40 && photos.length > 1) showPhoto(currentIndex + (deltaX < 0 ? 1 : -1));
+        }, { passive: true });
+
+        mainImg.addEventListener('error', () => { mainImg.src = fallbackPhoto; }, { once: true });
+
         const addToCartButton = card.querySelector('.add-to-cart-button');
         addToCartButton.addEventListener('click', () => {
             this.addToCart(product);
             this.animateAddToCart(addToCartButton);
         });
-        
         return card;
     }
 
@@ -332,7 +352,7 @@ class ShopApp {
             const formattedPrice = this.formatPrice(product.price);
             
             itemEl.innerHTML = `
-                <img src="${product.photo}" class="cart-item-img" alt="${product.name}" 
+                <img src="${Array.isArray(product.photo) ? product.photo[0] : (product.photos?.[0] || product.gallery?.[0] || product.photo)}" class="cart-item-img" alt="${product.name}" 
                      onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=100&h=100&fit=crop';">
                 <div class="cart-item-details">
                     <div class="cart-item-name">${product.name}</div>
