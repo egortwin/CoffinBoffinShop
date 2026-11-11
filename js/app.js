@@ -102,11 +102,14 @@ class ShopApp {
         try {
             this.showLoader();
             
-            // Проверяем наличие встроенного каталога
-            if (window.EMBEDDED_CATALOG && Array.isArray(window.EMBEDDED_CATALOG)) {
-                console.log('Используем встроенный каталог');
-                this.allProducts = window.EMBEDDED_CATALOG;
-                this.renderProducts(this.allProducts);
+            // Используем только встроенный каталог. Не подменяем его старыми тестовыми товарами.
+            if (!Array.isArray(window.EMBEDDED_CATALOG)) {
+                throw new Error('Встроенный каталог не загружен или содержит синтаксическую ошибку');
+            }
+
+            console.log('Используем встроенный каталог');
+            this.allProducts = window.EMBEDDED_CATALOG;
+            this.renderProducts(this.allProducts);
                 return;
             }
             
