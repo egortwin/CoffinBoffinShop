@@ -11,7 +11,11 @@ window.EMBEDDED_CATALOG = [
     "name": "Шурупы универсальные 3,5x45",
     "description": "Шурупы высокого качества для крепления различных материалов. Подходят для дерева, гипсокартона.",
     "price": 34.30,
-    "photo": "https://images.unsplash.com/photo-1609205292622-0d43b9e24f11?w=300&h=300&fit=crop",
+   "photo": [
+    "https://i.yapx.ru/eYaCd.png",
+    "https://i.yapx.ru/eYaCe.png",
+    "https://i.yapx.ru/eYaCf.png"
+  ],
     "category": "Крепеж",
     "inStock": true,
     "popular": true
