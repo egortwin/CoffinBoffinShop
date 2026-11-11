@@ -96,9 +96,7 @@ class ShopApp {
         root.style.setProperty('--accent-color', SHOP_CONFIG.colors.accent);
         root.style.setProperty('--success-color', SHOP_CONFIG.colors.success);
 
-        // Обновление заголовков секций
-        document.querySelector('.categories-section .section-title').textContent = SHOP_CONFIG.sectionTitles.categories;
-        document.querySelector('.products-section .section-title').textContent = SHOP_CONFIG.sectionTitles.products;
+        // Заголовки секций скрыты в интерфейсе — не обращаемся к отсутствующим элементам.
     }
 
     // ИСПРАВЛЕНО: Загрузка товаров
