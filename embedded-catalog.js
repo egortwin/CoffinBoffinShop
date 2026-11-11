@@ -78,4 +78,15 @@ window.EMBEDDED_CATALOG = [
     "inStock": true,
     "popular": false
   }
+   {
+    "id": 8,
+    "sku": "CB-008",
+    "name": "Футляр EMBER II",
+    "description": "Футляр для зажигалки BIC. Носферату розовый",
+    "price": 600,
+    "photo": ["https://vk.cc/d3OKbw","https://vk.cc/d3OKfJ","https://vk.cc/d3OKkY"],
+    "category": "Футляры для зажигалок",
+    "inStock": true,
+    "popular": false
+  },
 ];
