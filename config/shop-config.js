@@ -27,7 +27,7 @@ const SHOP_CONFIG = {
     
     // === КОНТАКТНАЯ ИНФОРМАЦИЯ ===
     contact: {
-        phone: "+7 (900) 123-45-67",
+        phone: "+7 (999) 989-12-19",
         email: "info@stroymarket.ru",
         address: "г. Москва, ул. Строительная, 123"
     },
