@@ -190,17 +190,34 @@ class ShopApp {
         });
     }
 
-    // Создание карточки товара
+
+    // Создание карточки товара (с поддержкой нескольких фото)
     createProductCard(product) {
         const card = document.createElement('div');
         card.className = 'product-card';
         
         const formattedPrice = this.formatPrice(product.price);
         
+        // Нормализуем фото в массив
+        const photos = Array.isArray(product.photo) ? product.photo : [product.photo];
+        const mainPhoto = photos[0] || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&h=300&fit=crop';
+        
+        // Генерируем миниатюры, если фото больше одного
+        let thumbnailsHtml = '';
+        if (photos.length > 1) {
+            thumbnailsHtml = `<div class="product-thumbnails">` +
+                photos.map((p, i) => 
+                    `<img src="${p}" class="product-thumb ${i === 0 ? 'active' : ''}" 
+                          data-src="${p}" alt="Фото ${i + 1}">`
+                ).join('') +
+                `</div>`;
+        }
+        
         card.innerHTML = `
             <div class="product-photo">
-                <img src="${product.photo}" alt="${product.name}" 
+                <img class="product-main-img" src="${mainPhoto}" alt="${product.name}" 
                      onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&h=300&fit=crop';">
+                ${thumbnailsHtml}
             </div>
             <div class="product-details">
                 <h3 class="product-name">${product.name}</h3>
@@ -211,6 +228,18 @@ class ShopApp {
                 </div>
             </div>
         `;
+        
+        // Логика переключения изображений по миниатюрам
+        const mainImg = card.querySelector('.product-main-img');
+        const thumbnails = card.querySelectorAll('.product-thumb');
+        
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                mainImg.src = thumb.dataset.src;
+                thumbnails.forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+            });
+        });
         
         const addToCartButton = card.querySelector('.add-to-cart-button');
         addToCartButton.addEventListener('click', () => {
