@@ -784,3 +784,94 @@ body::before {
         margin-top: 12px;
     }
 }
+
+
+/* === КАРУСЕЛЬ ФОТО В КАРТОЧКЕ ТОВАРА === */
+.product-photo {
+    position: relative;
+    height: 260px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.product-photo::after { pointer-events: none; z-index: 1; }
+.product-carousel {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+.product-carousel .product-main-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: none !important;
+    transition: opacity .2s ease;
+}
+.product-carousel-arrow {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    background: rgba(0,0,0,.58);
+    color: #fff;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+.product-carousel-arrow.prev { left: 10px; }
+.product-carousel-arrow.next { right: 10px; }
+.product-carousel-arrow:hover { background: rgba(0,0,0,.82); }
+.product-carousel-count {
+    position: absolute;
+    z-index: 3;
+    right: 10px;
+    bottom: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: #fff;
+    background: rgba(0,0,0,.62);
+    font-size: 11px;
+    pointer-events: none;
+}
+.product-thumbnails {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 7px;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 8px 5px;
+    margin: 0;
+    z-index: 2;
+}
+.product-thumb-button {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    padding: 2px;
+    border: 2px solid transparent;
+    border-radius: 7px;
+    background: rgba(255,255,255,.08);
+    opacity: .65;
+    cursor: pointer;
+}
+.product-thumb-button img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.product-thumb-button.active { border-color: var(--accent-color, #f59e0b); opacity: 1; }
+@media (max-width: 480px) {
+    .product-photo { height: 280px; }
+    .product-thumb-button { width: 38px; height: 38px; }
+}
