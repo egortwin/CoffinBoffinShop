@@ -53,7 +53,7 @@ window.EMBEDDED_CATALOG = [
     "price": 500,
     "photo": [],
     "category": "Брелоки",
-    "inStock": true,
+    "inStock": false,
     "popular": false
   },
   {
@@ -64,7 +64,7 @@ window.EMBEDDED_CATALOG = [
     "price": 500,
     "photo": [],
     "category": "Брелоки",
-    "inStock": true,
+    "inStock": false,
     "popular": false
   },
   {
@@ -75,7 +75,7 @@ window.EMBEDDED_CATALOG = [
     "price": 500,
     "photo": [],
     "category": "Брелоки",
-    "inStock": true,
+    "inStock": false,
     "popular": false
   },
   {
