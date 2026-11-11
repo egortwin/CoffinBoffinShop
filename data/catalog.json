@@ -9,7 +9,11 @@ const CATEGORIES = [
 "name": "Замок накладной ГРАНИТ",
 "description": "Накладной сувальдный замок, сталь 4 шт., диаметр 18 мм.",
 "price": 2527.72,
-"photo": "https://example.com/images/zamok_granit.jpg ",
+"photo": [
+    "https://i.yapx.ru/eYaCd.png",
+    "https://i.yapx.ru/eYaCe.png",
+    "https://i.yapx.ru/eYaCf.png"
+  ],
 "category": "Замки и фурнитура",
 "inStock": true,
 "popular": true
