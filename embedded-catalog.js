@@ -24,22 +24,11 @@ window.EMBEDDED_CATALOG = [
     "popular": false
   },
   {
-    "id": 3,
-    "sku": "CB-003",
-    "name": "Шкатулка EPITAPH",
-    "description": "Готическая шкатулка для хранения мелочей.",
-    "price": 500,
-    "photo": [],
-    "category": "Шкатулки",
-    "inStock": false,
-    "popular": false
-  },
-  {
     "id": 4,
     "sku": "CB-004",
-    "name": "Шкатулка EPITAPH II",
-    "description": "Готическая шкатулка для хранения мелочей.",
-    "price": 500,
+    "name": "Шкатулка EPITAPH II - Скоро в продаже",
+    "description": "Шкатулка для хранения мелочей. Скоро в продаже, идет разработка",
+    "price": 1000,
     "photo": [],
     "category": "Шкатулки",
     "inStock": false,
