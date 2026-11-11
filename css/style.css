@@ -875,3 +875,95 @@ body::before {
     .product-photo { height: 280px; }
     .product-thumb-button { width: 38px; height: 38px; }
 }
+
+
+/* === АДАПТИВНЫЕ ФОТО И ПОЛНОЭКРАННОЕ УВЕЛИЧЕНИЕ === */
+.product-card {
+    min-width: 0;
+}
+.product-photo {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+}
+.product-carousel {
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+}
+.product-carousel .product-main-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 520px;
+    object-fit: contain;
+    object-position: center;
+    cursor: zoom-in;
+    transform: none !important;
+}
+.product-photo::after {
+    pointer-events: none;
+}
+.product-thumbnails {
+    flex-wrap: wrap;
+}
+.image-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, .94);
+    opacity: 0;
+    visibility: hidden;
+    cursor: zoom-out;
+    transition: opacity .2s ease, visibility .2s ease;
+}
+.image-viewer.active {
+    opacity: 1;
+    visibility: visible;
+}
+.image-viewer-img {
+    display: block;
+    max-width: 96vw;
+    max-height: 92vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    cursor: zoom-out;
+    box-shadow: 0 12px 60px rgba(0,0,0,.55);
+}
+.image-viewer-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(255,255,255,.45);
+    border-radius: 50%;
+    background: rgba(20,15,20,.8);
+    color: #fff;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+}
+body.image-viewer-open {
+    overflow: hidden;
+}
+@media (max-width: 480px) {
+    .product-carousel .product-main-img {
+        max-height: 460px;
+    }
+    .image-viewer {
+        padding: 12px;
+    }
+    .image-viewer-img {
+        max-width: 98vw;
+        max-height: 90vh;
+    }
+}
