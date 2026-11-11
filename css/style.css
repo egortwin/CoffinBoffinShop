@@ -245,17 +245,17 @@ body::before {
 }
 
 /* === ТОВАРЫ === */
-.products-section {
+.s-section {
     animation: fadeInUp 1.2s ease-out 0.4s both;
 }
 
-.product-catalog {
+.-catalog {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 24px;
 }
 
-.product-card {
+.-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -266,13 +266,13 @@ body::before {
     animation: fadeInScale 0.6s ease-out;
 }
 
-.product-card:hover {
+.-card:hover {
     transform: translateY(-10px) scale(1.02);
     box-shadow: var(--shadow-xl);
     background: rgba(255, 255, 255, 0.15);
 }
 
-.product-photo {
+.-photo {
     position: relative;
     height: 200px;
     display: flex;
@@ -280,7 +280,7 @@ body::before {
     overflow: visible; /* разрешаем миниатюрам выходить за пределы фото */
 }
 
-.product-photo img {
+.-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
