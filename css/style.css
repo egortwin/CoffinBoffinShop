@@ -274,8 +274,10 @@ body::before {
 
 .product-photo {
     position: relative;
-    overflow: hidden;
     height: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible; /* разрешаем миниатюрам выходить за пределы фото */
 }
 
 .product-photo img {
@@ -673,6 +675,38 @@ body::before {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* === МИНИАТЮРЫ ДЛЯ НЕСКОЛЬКИХ ФОТО === */
+.product-thumbnails {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+}
+
+.product-thumb {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.product-thumb:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.product-thumb.active {
+    border-color: var(--accent-color, #f59e0b);
+    opacity: 1;
 }
 
 /* === АДАПТИВНОСТЬ === */
