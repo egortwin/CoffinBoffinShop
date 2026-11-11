@@ -195,8 +195,8 @@ class ShopApp {
     createProductCard(product) {
         const card = document.createElement('div');
         card.className = 'product-card';
-        const formattedPrice = this.formatPrice(product.price);
-        const fallbackPhoto = 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=600&fit=crop';
+        const formattedPrice = product.price == null ? 'Цена уточняется' : this.formatPrice(product.price);
+        const fallbackPhoto = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><rect width="600" height="600" fill="#171316"/><path d="M300 95 L440 165 L440 390 L300 505 L160 390 L160 165 Z" fill="none" stroke="#713b50" stroke-width="5"/><text x="300" y="285" fill="#c7aab6" font-family="Arial,sans-serif" font-size="30" text-anchor="middle" letter-spacing="4">COFFIN</text><text x="300" y="330" fill="#c7aab6" font-family="Arial,sans-serif" font-size="30" text-anchor="middle" letter-spacing="4">BOFFIN</text><text x="300" y="385" fill="#806775" font-family="Arial,sans-serif" font-size="15" text-anchor="middle">ФОТО СКОРО</text></svg>');
         const sourcePhotos = product.photos || product.gallery || product.photo || [];
         const photos = (Array.isArray(sourcePhotos) ? sourcePhotos : [sourcePhotos])
             .filter(photo => typeof photo === 'string' && photo.trim())
@@ -227,7 +227,7 @@ class ShopApp {
                 <p class="product-description">${product.description}</p>
                 <div class="product-footer">
                     <div class="product-price">${formattedPrice}</div>
-                    <button class="add-to-cart-button">В корзину</button>
+                    <button class="add-to-cart-button" ${product.price == null ? 'disabled title="Цена будет добавлена позже"' : ''}>${product.price == null ? 'Скоро в продаже' : 'В корзину'}</button>
                 </div>
             </div>
         `;
@@ -263,10 +263,12 @@ class ShopApp {
         mainImg.addEventListener('error', () => { mainImg.src = fallbackPhoto; }, { once: true });
 
         const addToCartButton = card.querySelector('.add-to-cart-button');
-        addToCartButton.addEventListener('click', () => {
-            this.addToCart(product);
-            this.animateAddToCart(addToCartButton);
-        });
+        if (product.price != null) {
+            addToCartButton.addEventListener('click', () => {
+                this.addToCart(product);
+                this.animateAddToCart(addToCartButton);
+            });
+        }
         return card;
     }
 
@@ -349,7 +351,7 @@ class ShopApp {
         this.cart.forEach(product => {
             const itemEl = document.createElement('div');
             itemEl.className = 'cart-item';
-            const formattedPrice = this.formatPrice(product.price);
+            const formattedPrice = product.price == null ? 'Цена уточняется' : this.formatPrice(product.price);
             
             itemEl.innerHTML = `
                 <img src="${Array.isArray(product.photo) ? product.photo[0] : (product.photos?.[0] || product.gallery?.[0] || product.photo)}" class="cart-item-img" alt="${product.name}" 
@@ -378,7 +380,7 @@ class ShopApp {
     }
 
     calculateTotalPrice() {
-        const total = this.cart.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+        const total = this.cart.reduce((sum, product) => sum + ((product.price || 0) * product.quantity), 0);
         const formattedTotal = this.formatPrice(total);
         this.elements.cartTotalPriceEl.textContent = formattedTotal;
     }
@@ -539,19 +541,7 @@ class ShopApp {
         if (categoryName === 'Все товары') {
             filtered = this.allProducts;
         } else {
-            const selectedCategory = CATEGORIES.find(cat => cat.name === categoryName);
-            if (selectedCategory && selectedCategory.keywords.length > 0) {
-                filtered = this.allProducts.filter(product => {
-                    const productNameLower = product.name.toLowerCase();
-                    const productDescriptionLower = product.description.toLowerCase();
-                    return selectedCategory.keywords.some(keyword => 
-                        productNameLower.includes(keyword.toLowerCase()) || 
-                        productDescriptionLower.includes(keyword.toLowerCase())
-                    );
-                });
-            } else {
-                filtered = [];
-            }
+            filtered = this.allProducts.filter(product => product.category === categoryName);
         }
         this.renderProducts(filtered);
     }
