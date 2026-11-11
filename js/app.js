@@ -351,10 +351,12 @@ class ShopApp {
         this.cart.forEach(product => {
             const itemEl = document.createElement('div');
             itemEl.className = 'cart-item';
-            const formattedPrice = product.price == null ? 'Цена уточняется' : this.formatPrice(product.price);
+            const formattedPrice = this.formatPrice(product.price);
+            const cartPhoto = Array.isArray(product.photo) ? product.photo[0] : (product.photos?.[0] || product.gallery?.[0] || product.photo);
+            const placeholderPhoto = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#171316"/><path d="M50 12 L78 28 L78 72 L50 90 L22 72 L22 28 Z" fill="none" stroke="#713b50" stroke-width="2"/></svg>');
             
             itemEl.innerHTML = `
-                <img src="${Array.isArray(product.photo) ? product.photo[0] : (product.photos?.[0] || product.gallery?.[0] || product.photo)}" class="cart-item-img" alt="${product.name}" 
+                <img src="${cartPhoto || placeholderPhoto}" class="cart-item-img" alt="${product.name}" 
                      onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=100&h=100&fit=crop';">
                 <div class="cart-item-details">
                     <div class="cart-item-name">${product.name}</div>
@@ -395,57 +397,35 @@ class ShopApp {
         this.elements.cartModal.style.display = 'none';
     }
 
-    // ИСПРАВЛЕНО: Отправка заказа с обязательной организацией
+    // Открываем личный чат продавца с подготовленным заказом
     submitOrder() {
-        const customerName = this.elements.customerNameInput.value.trim();
-        const organization = this.elements.organizationInput.value.trim();
-        const phone = this.elements.phoneInput.value.trim();
-        const address = this.elements.addressInput.value.trim();
-        const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
-
         if (this.cart.length === 0) {
             this.showAlert(SHOP_CONFIG.messages.emptyCart);
             return;
         }
-        
-        // ИСПРАВЛЕНО: Организация теперь обязательна
-        if (!customerName || !organization || !phone || !address) {
-            this.showAlert('Пожалуйста, заполните все обязательные поля: имя, организацию, телефон и адрес доставки.');
-            return;
+
+        const orderLines = this.cart.map(product => {
+            const lineTotal = product.price * product.quantity;
+            return `• ${product.category} — ${product.name}
+  ${product.price} ₽ × ${product.quantity} = ${lineTotal} ₽`;
+        });
+
+        const total = this.cart.reduce((sum, product) => sum + product.price * product.quantity, 0);
+        const message = [
+            'Здравствуйте! Хочу купить:',
+            '',
+            ...orderLines,
+            '',
+            `Итого: ${total} ₽`
+        ].join('\n');
+
+        const telegramUrl = `https://t.me/djdktn?text=${encodeURIComponent(message)}`;
+
+        if (this.tg && typeof this.tg.openTelegramLink === 'function') {
+            this.tg.openTelegramLink(telegramUrl);
+        } else {
+            window.open(telegramUrl, '_blank', 'noopener');
         }
-
-        // Добавляем данные Telegram пользователя
-        const telegramUser = this.tg ? this.tg.initDataUnsafe.user : null;
-
-        const orderData = {
-            items: this.cart.map(p => ({ 
-                id: p.id, 
-                sku: p.sku, // Добавляем артикул для админа
-                name: p.name, 
-                price: p.price, 
-                quantity: p.quantity 
-            })),
-            totalPrice: this.cart.reduce((sum, p) => sum + (p.price * p.quantity), 0),
-            customer: {
-                name: customerName,
-                organization: organization,
-                phone: phone,
-                address: address,
-                paymentMethod: this.getPaymentMethodLabel(paymentMethod),
-                // Telegram данные пользователя
-                telegramId: telegramUser?.id || '',
-                telegramUsername: telegramUser?.username || '',
-                telegramFirstName: telegramUser?.first_name || '',
-                telegramLastName: telegramUser?.last_name || ''
-            },
-            orderDate: new Date().toISOString(),
-            shopInfo: {
-                name: SHOP_CONFIG.shopTitle,
-                contact: SHOP_CONFIG.contact
-            }
-        };
-
-        this.processOrder(orderData);
     }
 
     getPaymentMethodLabel(value) {
