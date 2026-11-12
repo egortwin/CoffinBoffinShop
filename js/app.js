@@ -434,7 +434,9 @@ class ShopApp {
 
         const orderLines = this.cart.map(product => {
             const lineTotal = product.price * product.quantity;
+            const description = (product.description || 'Описание не указано').trim();
             return `• ${product.category} — ${product.name}
+  Описание: ${description}
   ${product.price} ₽ × ${product.quantity} = ${lineTotal} ₽`;
         });
 
