@@ -544,46 +544,84 @@ class ShopApp {
         });
     }
 
-    // Информационная карточка категории (не является товаром)
+    // Информационная карточка категории (не является товаром).
+    // Поддерживает одну карточку (info) или карусель карточек (infoCards).
     createCategoryInfoCard(category) {
-        const info = category?.info;
-        if (!info) return null;
-
-        const title = (info.title || '').trim();
-        const description = (info.description || '').trim();
-        const dimensions = (info.dimensions || '').trim();
-        const packaging = (info.packaging || '').trim();
-        const image = (info.image || '').trim();
-
-        // Пустая карточка не показывается, пока для категории не добавлен контент.
-        if (!title && !description && !dimensions && !packaging && !image) return null;
-
-        const card = document.createElement('article');
-        card.className = 'category-info-card';
-        const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
+        const cardsData = Array.isArray(category?.infoCards)
+            ? category.infoCards
+            : (category?.info ? [category.info] : []);
+        const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
             '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
         }[char]));
 
-        card.innerHTML = `
-            ${image ? `<div class="category-info-image-wrap"><img class="category-info-image" src="${escapeHtml(image)}" alt="${escapeHtml(title || category.name)}" loading="lazy"></div>` : ''}
-            <div class="category-info-content">
-                ${title ? `<h2 class="category-info-title">${escapeHtml(title)}</h2>` : ''}
-                ${description ? `<p class="category-info-description">${escapeHtml(description)}</p>` : ''}
-                ${dimensions ? `<div class="category-info-detail"><span class="category-info-label">Размеры</span><p>${escapeHtml(dimensions)}</p></div>` : ''}
-                ${packaging ? `<div class="category-info-detail"><span class="category-info-label">Упаковка</span><p>${escapeHtml(packaging)}</p></div>` : ''}
-            </div>
+        const slides = cardsData.map(info => {
+            info = info || {};
+            const title = (info.title || '').trim();
+            const description = (info.description || '').trim();
+            const dimensions = (info.dimensions || '').trim();
+            const packaging = (info.packaging || '').trim();
+            const image = (info.image || '').trim();
+            if (!title && !description && !dimensions && !packaging && !image) return '';
+
+            return `
+                <article class="category-info-card">
+                    ${image ? `<div class="category-info-image-wrap"><img class="category-info-image" src="${escapeHtml(image)}" alt="${escapeHtml(title || category.name)}" loading="lazy"></div>` : ''}
+                    <div class="category-info-content">
+                        ${title ? `<h2 class="category-info-title">${escapeHtml(title)}</h2>` : ''}
+                        ${description ? `<p class="category-info-description">${escapeHtml(description)}</p>` : ''}
+                        ${dimensions ? `<div class="category-info-detail"><span class="category-info-label">Размеры</span><p>${escapeHtml(dimensions)}</p></div>` : ''}
+                        ${packaging ? `<div class="category-info-detail"><span class="category-info-label">Упаковка</span><p>${escapeHtml(packaging)}</p></div>` : ''}
+                    </div>
+                </article>
+            `;
+        }).filter(Boolean);
+
+        if (!slides.length) return null;
+
+        const wrapper = document.createElement('section');
+        wrapper.className = 'category-info-carousel';
+        wrapper.setAttribute('aria-label', 'Информация о категории');
+        wrapper.innerHTML = `
+            <div class="category-info-track">${slides.join('')}</div>
+            ${slides.length > 1 ? `
+                <div class="category-info-controls">
+                    <button type="button" class="category-info-arrow prev" aria-label="Предыдущая карточка">‹</button>
+                    <div class="category-info-pagination" aria-live="polite">
+                        <span class="category-info-current">1</span> / <span>${slides.length}</span>
+                    </div>
+                    <button type="button" class="category-info-arrow next" aria-label="Следующая карточка">›</button>
+                </div>
+            ` : ''}
         `;
 
-        const infoImage = card.querySelector('.category-info-image');
-        if (infoImage) {
+        const track = wrapper.querySelector('.category-info-track');
+        const slideEls = [...track.children];
+        let currentIndex = 0;
+        const updateSlide = index => {
+            currentIndex = (index + slideEls.length) % slideEls.length;
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            const current = wrapper.querySelector('.category-info-current');
+            if (current) current.textContent = String(currentIndex + 1);
+        };
+        wrapper.querySelector('.category-info-arrow.prev')?.addEventListener('click', () => updateSlide(currentIndex - 1));
+        wrapper.querySelector('.category-info-arrow.next')?.addEventListener('click', () => updateSlide(currentIndex + 1));
+
+        let touchStartX = 0;
+        track.addEventListener('touchstart', event => {
+            touchStartX = event.changedTouches[0].clientX;
+        }, { passive: true });
+        track.addEventListener('touchend', event => {
+            const deltaX = event.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(deltaX) > 45 && slideEls.length > 1) updateSlide(currentIndex + (deltaX < 0 ? 1 : -1));
+        }, { passive: true });
+
+        wrapper.querySelectorAll('.category-info-image').forEach(infoImage => {
             infoImage.addEventListener('error', () => {
-                card.querySelector('.category-info-image-wrap')?.remove();
+                infoImage.closest('.category-info-image-wrap')?.remove();
             }, { once: true });
-            infoImage.addEventListener('click', () => {
-                this.openImageViewer(infoImage.src, infoImage.alt);
-            });
-        }
-        return card;
+            infoImage.addEventListener('click', () => this.openImageViewer(infoImage.src, infoImage.alt));
+        });
+        return wrapper;
     }
 
     filterProductsByCategory(categoryName) {
