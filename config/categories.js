@@ -12,18 +12,18 @@ const CATEGORIES = [
     enabled: true,
     infoCards: [
       {
-        title: 'О футлярах',
+        title: 'Футляр EMBER II',
         image: 'https://i.yapx.cc/eYqcQ.jpg',
         description: 'Зажигалка в подарок!',
         dimensions: '90х44х17',
         packaging: 'Без доп упаковки'
       },
       {
-        title: '',
-        image: '',
-        description: '',
-        dimensions: '',
-        packaging: ''
+        title: 'Футляр ASHES II',
+        image: 'https://i.yapx.cc/eYq9u.jpg',
+        description: 'Зажигалка в подарок',
+        dimensions: '74х36х17',
+        packaging: 'Без доп упаковки'
       }
     ]
   },
