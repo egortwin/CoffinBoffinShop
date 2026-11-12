@@ -90,6 +90,66 @@ window.EMBEDDED_CATALOG = [
     "inStock": true,
     "popular": false
   },
+
+   {
+    "id": 20,
+    "sku": "CB-020",
+    "name": "Футляр ASHES II",
+    "description": "Футляр для зажигалки BIC. Белый, Черный Анкх. Пластик PETG",
+    "price": 500,
+    "photo": ["https://i.yapx.ru/eYkQH.jpg","https://i.yapx.ru/eYkQI.jpg","https://i.yapx.ru/eYkQJ.jpg"],
+    "category": "Футляры для зажигалок",
+    "inStock": true,
+    "popular": false
+  },
+
+  {
+    "id": 21,
+    "sku": "CB-021",
+    "name": "Футляр ASHES II",
+    "description": "Футляр для зажигалки BIC. Белый, Фиолетвый Анкх. Пластик PETG",
+    "price": 500,
+    "photo": ["https://i.yapx.ru/eYkSf.jpg","https://i.yapx.ru/eYkSi.jpg","https://i.yapx.ru/eYkSj.jpg"],
+    "category": "Футляры для зажигалок",
+    "inStock": true,
+    "popular": false
+  },
+
+  {
+    "id": 22,
+    "sku": "CB-022",
+    "name": "Футляр ASHES II",
+    "description": "Футляр для зажигалки BIC. Прозрачный, Красный Анкх. Пластик PETG",
+    "price": 500,
+    "photo": ["https://i.yapx.ru/eYkSk.jpg","https://i.yapx.ru/eYkSo.jpg","https://i.yapx.ru/eYkSq.jpg"],
+    "category": "Футляры для зажигалок",
+    "inStock": true,
+    "popular": false
+  },
+
+   {
+    "id": 23,
+    "sku": "CB-023",
+    "name": "Футляр ASHES II",
+    "description": "Футляр для зажигалки BIC. Красный, Белый Анкх. Пластик PETG",
+    "price": 500,
+    "photo": ["https://i.yapx.ru/eYkSr.jpg","https://i.yapx.ru/eYkSu.jpg","https://i.yapx.ru/eYkSv.jpg"],
+    "category": "Футляры для зажигалок",
+    "inStock": true,
+    "popular": false
+  },
+    {
+    "id": 24,
+    "sku": "CB-024",
+    "name": "Футляр ASHES II",
+    "description": "Футляр для зажигалки BIC. Флуоресцентный, Фиолетвый Анкх. Пластик PETG",
+    "price": 500,
+    "photo": ["https://i.yapx.ru/eYkSw.jpg","https://i.yapx.ru/eYkSy.jpg","https://i.yapx.ru/eYkSz.jpg"],
+    "category": "Футляры для зажигалок",
+    "inStock": true,
+    "popular": false
+  },
+ 
     {
     "id": 15,
     "sku": "CB-015",
@@ -119,6 +179,39 @@ window.EMBEDDED_CATALOG = [
     "description": "Брелок в виде мышки в гробике, Коричневая. Пластик PETG.",
     "price": 300,
     "photo": ["https://i.yapx.cc/eYcqk.jpg","https://i.yapx.cc/eYcqn.jpg"],
+    "category": "Брелоки",
+    "inStock": true,
+    "popular": false
+  },
+         {
+    "id": 18,
+    "sku": "CB-018",
+    "name": "Мышка в гробике — прозрачная",
+    "description": "Брелок в виде мышки в гробике, Прозрачная. Пластик PETG.",
+    "price": 300,
+    "photo": ["https://i.yapx.ru/eYkQA.jpg","https://i.yapx.ru/eYkQB.jpg"],
+    "category": "Брелоки",
+    "inStock": true,
+    "popular": false
+  },
+          {
+    "id": 19,
+    "sku": "CB-019",
+    "name": "Мышка в гробике — розовая",
+    "description": "Брелок в виде мышки в гробике, Розовая. Пластик PETG.",
+    "price": 300,
+    "photo": ["https://i.yapx.ru/eYkQD.jpg","https://i.yapx.ru/eYkQE.jpg"],
+    "category": "Брелоки",
+    "inStock": true,
+    "popular": false
+  },
+ {
+    "id": 20,
+    "sku": "CB-020",
+    "name": "Мышка в гробике — желтая",
+    "description": "Брелок в виде мышки в гробике, желтая. Пластик PETG.",
+    "price": 300,
+    "photo": ["https://i.yapx.ru/eYkQF.jpg","https://i.yapx.ru/eYkQG.jpg"],
     "category": "Брелоки",
     "inStock": true,
     "popular": false
