@@ -1,5 +1,6 @@
 // Категории магазина COFFIN BOFFIN
 // Информационные карточки редактируются здесь отдельно для каждой категории.
+// info — одна карточка; infoCards — несколько карточек в карусели.
 // image — прямая ссылка на фото; description — общее описание;
 // dimensions — размеры; packaging — информация об упаковке.
 const CATEGORIES = [
@@ -9,13 +10,22 @@ const CATEGORIES = [
     description: 'Футляры для зажигалок BIC J3',
     keywords: [],
     enabled: true,
-    info: {
-      title: 'О футлярах',
-      image: 'https://i.yapx.cc/eYqcQ.jpg',
-      description: 'Зажигалка в подарок!',
-      dimensions: '90х44х17',
-      packaging: 'Без доп упаковки'
-    }
+    infoCards: [
+      {
+        title: 'О футлярах',
+        image: 'https://i.yapx.cc/eYqcQ.jpg',
+        description: 'Зажигалка в подарок!',
+        dimensions: '90х44х17',
+        packaging: 'Без доп упаковки'
+      },
+      {
+        title: '',
+        image: '',
+        description: '',
+        dimensions: '',
+        packaging: ''
+      }
+    ]
   },
   {
     name: 'Шкатулки',
