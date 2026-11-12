@@ -1087,3 +1087,13 @@ body::before {
   .shop-title { font-size:13px; }
   .cart-button { padding:8px 9px; font-size:14px; }
 }
+
+
+/* === СКРУГЛЁННЫЕ КАРТОЧКИ ТОВАРОВ === */
+.product-card {
+  border-radius: 18px;
+  overflow: hidden;
+}
+.product-photo {
+  border-radius: 17px 17px 0 0;
+}
