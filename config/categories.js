@@ -6,15 +6,15 @@ const CATEGORIES = [
   {
     name: 'Футляры для зажигалок',
     icon: '🕯️',
-    description: 'Готические футляры для зажигалок',
+    description: 'Футляры для зажигалок BIC J3',
     keywords: [],
     enabled: true,
     info: {
-      title: '',
-      image: '',
-      description: '',
-      dimensions: '',
-      packaging: ''
+      title: 'О футлярах',
+      image: 'https://i.yapx.cc/eYqcQ.jpg',
+      description: 'Зажигалка в подарок!',
+      dimensions: '90х44х17',
+      packaging: 'Без доп упаковки'
     }
   },
   {
