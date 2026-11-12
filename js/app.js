@@ -544,6 +544,48 @@ class ShopApp {
         });
     }
 
+    // Информационная карточка категории (не является товаром)
+    createCategoryInfoCard(category) {
+        const info = category?.info;
+        if (!info) return null;
+
+        const title = (info.title || '').trim();
+        const description = (info.description || '').trim();
+        const dimensions = (info.dimensions || '').trim();
+        const packaging = (info.packaging || '').trim();
+        const image = (info.image || '').trim();
+
+        // Пустая карточка не показывается, пока для категории не добавлен контент.
+        if (!title && !description && !dimensions && !packaging && !image) return null;
+
+        const card = document.createElement('article');
+        card.className = 'category-info-card';
+        const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[char]));
+
+        card.innerHTML = `
+            ${image ? `<div class="category-info-image-wrap"><img class="category-info-image" src="${escapeHtml(image)}" alt="${escapeHtml(title || category.name)}" loading="lazy"></div>` : ''}
+            <div class="category-info-content">
+                ${title ? `<h2 class="category-info-title">${escapeHtml(title)}</h2>` : ''}
+                ${description ? `<p class="category-info-description">${escapeHtml(description)}</p>` : ''}
+                ${dimensions ? `<div class="category-info-detail"><span class="category-info-label">Размеры</span><p>${escapeHtml(dimensions)}</p></div>` : ''}
+                ${packaging ? `<div class="category-info-detail"><span class="category-info-label">Упаковка</span><p>${escapeHtml(packaging)}</p></div>` : ''}
+            </div>
+        `;
+
+        const infoImage = card.querySelector('.category-info-image');
+        if (infoImage) {
+            infoImage.addEventListener('error', () => {
+                card.querySelector('.category-info-image-wrap')?.remove();
+            }, { once: true });
+            infoImage.addEventListener('click', () => {
+                this.openImageViewer(infoImage.src, infoImage.alt);
+            });
+        }
+        return card;
+    }
+
     filterProductsByCategory(categoryName) {
         this.currentCategory = categoryName;
         let filtered = [];
@@ -554,6 +596,12 @@ class ShopApp {
             filtered = this.allProducts.filter(product => product.category === categoryName);
         }
         this.renderProducts(filtered);
+
+        if (categoryName !== 'Все товары') {
+            const category = CATEGORIES.find(item => item.name === categoryName);
+            const infoCard = this.createCategoryInfoCard(category);
+            if (infoCard) this.elements.catalogContainer.prepend(infoCard);
+        }
     }
 }
 
