@@ -8,6 +8,7 @@ window.BOX_CONFIGURATOR_CONFIG = {
   price: 1000,
   background: '',
   frontDesigns: [],
+  frontBaseDesigns: [],
   backDesigns: [],
   materials: [{ id: 'PLA', name: 'PLA' }, { id: 'PETG', name: 'PETG' }]
 };
