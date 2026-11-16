@@ -300,6 +300,77 @@ class ShopApp {
         return card;
     }
 
+    createBoxConfigurator() {
+        const config = window.BOX_CONFIGURATOR_CONFIG;
+        if (!config || !config.enabled) return null;
+        const esc = value => String(value || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const fronts = Array.isArray(config.frontDesigns) ? config.frontDesigns : [];
+        const backs = Array.isArray(config.backDesigns) ? config.backDesigns : [];
+        const materials = Array.isArray(config.materials) ? config.materials : [];
+        let fi = 0, bi = 0, mi = 0;
+        const section = document.createElement('section');
+        section.className = 'box-configurator';
+        section.setAttribute('aria-label', 'Конфигуратор шкатулки');
+        const hasBg = Boolean(config.background);
+        section.innerHTML =
+            '<div class="box-configurator-heading"><h2>Собери свою шкатулку</h2><p>Выбери оформление передней и задней стороны</p></div>' +
+            '<div class="box-configurator-preview ' + (hasBg ? '' : 'is-placeholder') + '">' +
+              (hasBg ? '<img class="box-preview-background" src="' + esc(config.background) + '" alt="Обе стороны шкатулки">' :
+                '<div class="box-preview-placeholder"><span>⚰</span><strong>Предпросмотр шкатулки</strong><small>Фоновое фото добавим позже</small></div>') +
+              (hasBg ? '<img class="box-preview-front" alt="Выбранный анкх" hidden><img class="box-preview-back" alt="Выбранная карта Таро" hidden>' : '') +
+            '</div>' +
+            '<div class="box-configurator-controls">' +
+              '<div class="box-configurator-control"><label>Выбор задника</label><div class="box-configurator-selector"><button type="button" class="box-configurator-arrow back-prev" aria-label="Предыдущий задник">‹</button><span class="box-configurator-value back-value"></span><button type="button" class="box-configurator-arrow back-next" aria-label="Следующий задник">›</button></div></div>' +
+              '<div class="box-configurator-control"><label>Цвет анкха (передник)</label><div class="box-configurator-selector"><button type="button" class="box-configurator-arrow front-prev" aria-label="Предыдущий цвет анкха">‹</button><span class="box-configurator-value front-value"></span><button type="button" class="box-configurator-arrow front-next" aria-label="Следующий цвет анкха">›</button></div></div>' +
+              '<div class="box-configurator-control"><label>Материал шкатулки</label><div class="box-configurator-selector"><button type="button" class="box-configurator-arrow material-prev" aria-label="Предыдущий материал">‹</button><span class="box-configurator-value material-value"></span><button type="button" class="box-configurator-arrow material-next" aria-label="Следующий материал">›</button></div></div>' +
+            '</div>' +
+            '<div class="box-configurator-footer"><div class="box-configurator-price">' + (config.price == null ? 'Цена уточняется' : this.formatPrice(config.price)) + '</div><button type="button" class="box-configurator-add" disabled>Добавить в корзину</button><p class="box-configurator-hint"></p></div>';
+        const frontImg = section.querySelector('.box-preview-front');
+        const backImg = section.querySelector('.box-preview-back');
+        const addBtn = section.querySelector('.box-configurator-add');
+        const hint = section.querySelector('.box-configurator-hint');
+        const update = () => {
+            const front = fronts[fi], back = backs[bi], material = materials[mi];
+            section.querySelector('.front-value').textContent = front ? front.name : 'Цвета добавим позже';
+            section.querySelector('.back-value').textContent = back ? back.name : 'Дизайны добавим позже';
+            section.querySelector('.material-value').textContent = material ? material.name : 'Не задан';
+            if (frontImg) { frontImg.src = front && front.image ? front.image : ''; frontImg.hidden = !(front && front.image); }
+            if (backImg) { backImg.src = back && back.image ? back.image : ''; backImg.hidden = !(back && back.image); }
+            const ready = Boolean(config.background && front && front.image && back && back.image && material);
+            addBtn.disabled = !ready || config.price == null;
+            hint.textContent = ready ? 'Выбранные параметры будут переданы в заказ.' : 'Заказ станет доступен после добавления фонового фото и PNG-дизайнов.';
+        };
+        const bind = (key, list, get, set) => {
+            const prev = section.querySelector('.' + key + '-prev');
+            const next = section.querySelector('.' + key + '-next');
+            [prev, next].forEach(button => { if (button) button.disabled = list.length < 2; });
+            if (prev) prev.addEventListener('click', () => { if (!list.length) return; set((get() - 1 + list.length) % list.length); update(); });
+            if (next) next.addEventListener('click', () => { if (!list.length) return; set((get() + 1) % list.length); update(); });
+        };
+        bind('back', backs, () => bi, value => { bi = value; });
+        bind('front', fronts, () => fi, value => { fi = value; });
+        bind('material', materials, () => mi, value => { mi = value; });
+        addBtn.addEventListener('click', () => this.addConfiguredBoxToCart({
+            productId: config.productId, productName: config.productName, price: config.price,
+            background: config.background, front: fronts[fi], back: backs[bi], material: materials[mi]
+        }));
+        update();
+        return section;
+    }
+
+    addConfiguredBoxToCart(selection) {
+        const configuration = { front: selection.front.name, back: selection.back.name, material: selection.material.name };
+        const product = {
+            id: [selection.productId, configuration.front, configuration.back, configuration.material].join('|'),
+            name: selection.productName, description: 'Индивидуальная конфигурация шкатулки',
+            category: 'Шкатулки', price: selection.price,
+            photo: selection.background ? [selection.background] : [], configuration
+        };
+        this.addToCart(product);
+        const button = this.elements.catalogContainer.querySelector('.box-configurator-add');
+        if (button) this.animateAddToCart(button);
+    }
+
     // Анимация добавления в корзину
     animateAddToCart(button) {
         const originalText = button.textContent;
@@ -383,12 +454,14 @@ class ShopApp {
             const cartPhoto = Array.isArray(product.photo) ? product.photo[0] : (product.photos?.[0] || product.gallery?.[0] || product.photo);
             const placeholderPhoto = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#171316"/><path d="M50 12 L78 28 L78 72 L50 90 L22 72 L22 28 Z" fill="none" stroke="#713b50" stroke-width="2"/></svg>');
             
+            const configurationHtml = product.configuration ? `<div class="cart-item-configuration">Передник: ${product.configuration.front}<br>Задник: ${product.configuration.back}<br>Материал: ${product.configuration.material}</div>` : '';
             itemEl.innerHTML = `
                 <img src="${cartPhoto || placeholderPhoto}" class="cart-item-img" alt="${product.name}" 
                      onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=100&h=100&fit=crop';">
                 <div class="cart-item-details">
                     <div class="cart-item-name">${product.name}</div>
                     <div class="cart-item-price">${formattedPrice}</div>
+                    ${configurationHtml}
                 </div>
                 <div class="quantity-controls">
                     <button class="quantity-btn" data-product-id="${product.id}" data-delta="-1">−</button>
@@ -402,7 +475,7 @@ class ShopApp {
         // Добавляем обработчики для кнопок количества
         document.querySelectorAll('.quantity-btn').forEach(button => {
             button.addEventListener('click', (e) => {
-                const productId = parseInt(e.target.dataset.productId, 10);
+                const productId = e.target.dataset.productId;
                 const delta = parseInt(e.target.dataset.delta, 10);
                 this.changeQuantity(productId, delta);
             });
@@ -437,7 +510,7 @@ class ShopApp {
             const description = (product.description || 'Описание не указано').trim();
             return `• ${product.category} — ${product.name}
   Описание: ${description}
-  ${product.price} ₽ × ${product.quantity} = ${lineTotal} ₽`;
+  ${product.price} ₽ × ${product.quantity} = ${lineTotal} ₽${product.configuration ? `\n  Передник: ${product.configuration.front}\n  Задник: ${product.configuration.back}\n  Материал: ${product.configuration.material}` : ''}`;
         });
 
         const total = this.cart.reduce((sum, product) => sum + product.price * product.quantity, 0);
@@ -633,12 +706,20 @@ class ShopApp {
         } else {
             filtered = this.allProducts.filter(product => product.category === categoryName);
         }
+        const boxConfig = window.BOX_CONFIGURATOR_CONFIG;
+        if (categoryName === boxConfig?.category && boxConfig?.enabled) {
+            filtered = filtered.filter(product => product.id !== boxConfig.productId);
+        }
         this.renderProducts(filtered);
 
         if (categoryName !== 'Все товары') {
             const category = CATEGORIES.find(item => item.name === categoryName);
             const infoCard = this.createCategoryInfoCard(category);
             if (infoCard) this.elements.catalogContainer.prepend(infoCard);
+            if (categoryName === boxConfig?.category && boxConfig?.enabled) {
+                const configurator = this.createBoxConfigurator();
+                if (configurator) this.elements.catalogContainer.prepend(configurator);
+            }
         }
     }
 }
