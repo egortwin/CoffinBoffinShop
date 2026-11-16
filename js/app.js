@@ -409,13 +409,13 @@ class ShopApp {
     }
 
     changeQuantity(productId, delta) {
-        const product = this.cart.find(p => p.id === productId);
+        const product = this.cart.find(p => String(p.id) === String(productId));
         if (!product) return;
 
         product.quantity += delta;
 
         if (product.quantity <= 0) {
-            this.cart = this.cart.filter(p => p.id !== productId);
+            this.cart = this.cart.filter(p => String(p.id) !== String(productId));
         }
         this.updateCart();
     }
