@@ -300,6 +300,47 @@ class ShopApp {
         return card;
     }
 
+    // Информационная карточка шкатулки под конфигуратором — без кнопки покупки.
+    createBoxProductInfoCard(product, config) {
+        if (!product) return null;
+
+        const card = document.createElement('article');
+        card.className = 'product-card box-product-info-card';
+        const photos = (Array.isArray(product.photos) ? product.photos :
+            (Array.isArray(product.gallery) ? product.gallery :
+            (Array.isArray(product.photo) ? product.photo : (product.photo ? [product.photo] : []))))
+            .filter(photo => typeof photo === 'string' && photo.trim());
+        const image = photos[0] || config.background || '';
+        const formattedPrice = product.price == null ? 'Цена уточняется' : this.formatPrice(product.price);
+
+        card.innerHTML = `
+            ${image ? `<div class="product-photo"><img class="product-main-img box-product-info-image" src="${image}" alt="${product.name}" loading="lazy"></div>` : ''}
+            <div class="product-details">
+                <h3 class="product-name">${product.name}</h3>
+                <p class="product-description">${product.description || ''}</p>
+                <div class="product-footer">
+                    <div class="product-price">${formattedPrice}</div>
+                    <span class="box-product-info-note">Товар настраивается выше</span>
+                </div>
+            </div>
+        `;
+
+        const img = card.querySelector('.box-product-info-image');
+        if (img) {
+            img.addEventListener('error', () => img.closest('.product-photo')?.remove(), { once: true });
+            img.addEventListener('click', () => this.openImageViewer(img.src, img.alt));
+            img.setAttribute('role', 'button');
+            img.setAttribute('tabindex', '0');
+            img.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    this.openImageViewer(img.src, img.alt);
+                }
+            });
+        }
+        return card;
+    }
+
     createBoxConfigurator() {
         const config = window.BOX_CONFIGURATOR_CONFIG;
         if (!config || !config.enabled) return null;
@@ -724,6 +765,9 @@ class ShopApp {
             if (infoCard) this.elements.catalogContainer.prepend(infoCard);
             if (categoryName === boxConfig?.category && boxConfig?.enabled) {
                 const configurator = this.createBoxConfigurator();
+                const boxProduct = this.allProducts.find(product => String(product.id) === String(boxConfig.productId));
+                const productInfoCard = this.createBoxProductInfoCard(boxProduct, boxConfig);
+                if (productInfoCard) this.elements.catalogContainer.prepend(productInfoCard);
                 if (configurator) this.elements.catalogContainer.prepend(configurator);
             }
         }
