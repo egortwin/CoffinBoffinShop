@@ -1261,3 +1261,16 @@ body::before {
 .box-configurator-hint{margin:9px 0 0;color:#a99aa5;font-size:11px;line-height:1.45}
 .cart-item-configuration{margin-top:6px;color:#c7b4c1;font-size:11px;line-height:1.5}
 @media(max-width:480px){.box-configurator{padding:14px;border-radius:16px}.box-configurator-heading h2{font-size:19px}.box-configurator-preview{border-radius:11px}.box-configurator-arrow{width:40px;height:40px}.box-configurator-selector{grid-template-columns:40px minmax(0,1fr) 40px;gap:7px}}
+
+
+/* Информационная карточка конфигурируемой шкатулки */
+.box-product-info-card .product-footer {
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.box-product-info-note {
+    color: var(--text-secondary, #b8aab5);
+    font-size: 12px;
+    text-align: right;
+}
